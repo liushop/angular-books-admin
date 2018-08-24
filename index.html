@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>www.chao99.top-图书管理</title>
+	<meta name="description" content="这是一个 index 页面">
+	<meta name="keywords" content="index">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="icon" type="image/png" href="assets/i/favicon.png">
+	<link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+	<meta name="apple-mobile-web-app-title" content="Amaze UI" />
+	<link rel="stylesheet" href="assets/css/amazeui.min.css" />
+	<link rel="stylesheet" href="assets/css/admin.css">
+	<link rel="stylesheet" href="assets/css/app.css">
+	<script type="text/javascript" src="assets/js/angular.min.js"></script>
+	<script type="text/javascript">
+		angular.module("myApp",[]).controller("books",function($scope,$http){
+			$scope.data=[];
+			$scope.editBookIsShow=false;
+			$http.get("./api/info.php").success(function(res){
+				$scope.data=res;
+			});
+			//编辑start
+			$scope.goEditBook=function(index){
+				$scope.editIndex=index;
+				var book=$scope.data[index];
+				$scope.bookIdNew=book.bookId;
+				$scope.bookNameNew=book.bookName;
+				$scope.bookOriNew=book.bookOri;
+				$scope.bookPriceNew=book.bookPrice;
+				$scope.bookPubNew=book.bookPub;
+				$scope.editBookIsShow=true;
+			}
+
+			//更新数据库数据
+			$scope.confirms=function(bookIdNew,bookNameNew,bookOriNew,bookPriceNew,bookPubNew){
+				$http.post("./api/update.php",{bookId:bookIdNew,bookName:bookNameNew,bookOri:bookOriNew,bookPrice:bookPriceNew,bookPub:bookPubNew}).success(function(data){
+					if(data==1){
+						$scope.data[$scope.editIndex].bookName=bookNameNew;
+						$scope.data[$scope.editIndex].bookOri=bookOriNew;
+						$scope.data[$scope.editIndex].bookPrice=bookPriceNew;
+						$scope.data[$scope.editIndex].bookPub=bookPubNew;
+						layer.msg("编辑成功！")
+						$scope.editBookIsShow=false;
+					}
+				});   
+
+			};
+
+			//编辑end
+
+
+            //删除start
+            $scope.del=function(index,bookId){
+            	layer.confirm('您确定要删除吗？',{
+                 btn: ['确认','取消'] //按钮
+             }, function(){
+             	$scope.data.splice(index,1); 
+             	$http.get("./api/delete.php?bookId="+bookId).
+             	success(function(res){
+             		if(res==1){
+             			layer.msg("删除成功");
+             		}
+             	});
+               //删除end
+           })//属于layer
+            };
+        });
+</script>
+</head>
+<!-- 
+1、托管模块myApp
+2、接管myApp
+3、指定controller
+
+-->
+<body data-type="generalComponents">
+	<header class="am-topbar am-topbar-inverse admin-header">
+		<div class="am-topbar-brand">
+			<a href="javascript:;" class="tpl-logo">
+				<img src="assets/img/logo.png" alt="">
+			</a>
+		</div>
+		<div class="am-icon-list tpl-header-nav-hover-ico am-fl am-margin-right">
+		</div>
+		<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+		<div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+			<ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list tpl-header-list">
+				<li class="am-dropdown" data-am-dropdown data-am-dropdown-toggle>
+					<a class="am-dropdown-toggle tpl-header-list-link" href="javascript:;">
+						<span class="tpl-header-list-user-nick">www.chao99.top</span><span class="tpl-header-list-user-ico"> <img src="assets/img/www.chao99.top.png"></span>
+					</a>
+					<ul class="am-dropdown-content">
+						<li><a href="#"><span class="am-icon-bell-o"></span> 资料</a></li>
+						<li><a href="#"><span class="am-icon-cog"></span> 设置</a></li>
+						<li><a href="#"><span class="am-icon-power-off"></span> 退出</a></li>
+					</ul>
+				</li>
+				<li><a href="###" class="tpl-header-list-link"><span class="am-icon-sign-out tpl-header-list-ico-out-size"></span></a></li>
+			</ul>
+		</div>
+	</header>
+	<div class="tpl-page-container tpl-page-header-fixed">
+		<div class="tpl-left-nav tpl-left-nav-hover">
+			<div class="tpl-left-nav-title">
+				功能列表
+			</div>
+			<div class="tpl-left-nav-list">
+				<ul class="tpl-left-nav-menu">
+					<li class="tpl-left-nav-item">
+						<a href="javascript:void(0);" class="nav-link">
+							<i class="am-icon-home"></i>
+							<span>首页</span>
+						</a>
+					</li>
+					<li class="tpl-left-nav-item">
+						<a href="javascript:;" class="nav-link tpl-left-nav-link-list active">
+							<i class="am-icon-wpforms"></i>
+							<span>图书管理</span>
+						</a>
+					</li>
+
+				</ul>
+			</div>
+		</div>
+		<div class="tpl-content-wrapper">
+			<ol class="am-breadcrumb">
+				<li><a href="#" class="am-icon-home">首页</a></li>
+				<li class="am-active">图书列表</li>
+			</ol>
+			<div class="tpl-portlet-components" ng-app="myApp">
+				<div class="tpl-block">
+					<div class="am-g">
+						<div class="am-u-sm-12 am-u-md-6">
+							<div class="am-btn-toolbar">
+								<div class="am-btn-group am-btn-group-xs">
+									<button type="button" class="am-btn am-btn-default am-btn-success" id="add_book"><span class="am-icon-plus"></span> 新增</button>
+								</div>
+							</div>
+						</div>
+						<div class="am-u-sm-12 am-u-md-3">
+							<div class="am-input-group am-input-group-sm">
+								<input type="text" class="am-form-field" ng-model="search" placeholder="关键字">
+								<span class="am-input-group-btn">
+									<button class="am-btn  am-btn-default am-btn-success tpl-am-btn-success am-icon-search" type="button"></button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="am-g">
+						<div class="am-u-sm-12">
+							<form class="am-form" ng-controller="books">
+								<table class="am-table am-table-striped am-table-hover table-main">
+									<thead>
+										<tr>
+											<th class="table-id">编号</th>
+											<th class="table-title">书名</th>
+											<th class="table-type">原价</th>
+											<th class="table-type">现价</th>
+											<th class="table-author am-hide-sm-only">出版社</th>
+											<th class="table-date am-hide-sm-only">上架时间</th>
+											<th class="table-set">操作</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="value in data | filter:search">
+											<td>{{$index+1}}</td>
+											<td>{{value.bookName}}</td>
+											<td class="am-hide-sm-only">{{value.bookOri}}</td>
+											<td class="am-hide-sm-only">{{value.bookPrice}}</td>
+											<td class="am-hide-sm-only">{{value.bookPub}}</td>
+											<td class="am-hide-sm-only">{{value.bookAddTime}}</td>
+											<td>
+												<div class="am-btn-toolbar">
+													<div class="am-btn-group am-btn-group-xs">
+														<button class="am-btn am-btn-default am-btn-xs am-text-secondary" ng-click="goEditBook($index)"><span class="am-icon-pencil-square-o"></span> 编辑</button>
+														<button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only" ng-click="del($index,value.bookId)"><span class="am-icon-trash-o"></span> 删除</button>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<!-- 分页暂时注释 -->
+								<!-- <div class="am-cf">
+									<div class="am-fr">
+										<ul class="am-pagination tpl-pagination">
+											<li class="am-disabled"><a href="#">«</a></li>
+											<li class="am-active"><a href="#">1</a></li>
+											<li><a href="#">2</a></li>
+											<li><a href="#">3</a></li>
+											<li><a href="#">4</a></li>
+											<li><a href="#">5</a></li>
+											<li><a href="#">»</a></li>
+										</ul>
+									</div>
+								</div> -->
+								<hr>
+								<!-- 编辑start -->
+								<div id="edit_from" ng-show="editBookIsShow">
+									<form class="am-form am-form-horizontal">
+										<p>&nbsp;</p>
+										<div class="am-form-group">
+											<label class="am-u-sm-2 am-form-label">图书名称</label>
+											<div class="am-u-sm-8">
+												<input type="text" placeholder="图书名称" ng-model="bookNameNew">
+											</div>
+											<div class="am-u-sm-1"></div>
+										</div>
+										<p>&nbsp;</p>
+
+										<div class="am-form-group">
+											<label class="am-u-sm-2 am-form-label">原价</label>
+											<div class="am-u-sm-8">
+												<input type="text" placeholder="原价" ng-model="bookOriNew">
+											</div>
+											<div class="am-u-sm-1"></div>
+										</div>
+										<p>&nbsp;</p>
+
+										<div class="am-form-group">
+											<label class="am-u-sm-2 am-form-label">现价</label>
+											<div class="am-u-sm-8">
+												<input type="text" placeholder="现价" ng-model="bookPriceNew">
+											</div>
+											<div class="am-u-sm-1"></div>
+										</div>
+										<p>&nbsp;</p>
+
+										<div class="am-form-group">
+											<label class="am-u-sm-2 am-form-label">出版社</label>
+											<div class="am-u-sm-8">
+												<input type="text" placeholder="出版社" ng-model="bookPubNew">
+											</div>
+											<div class="am-u-sm-1"></div>
+										</div>
+										<p>&nbsp;</p>
+
+										<div class="am-form-group">
+											<div class="am-u-sm-9 am-u-sm-push-3">
+												<button type="button" class="am-btn am-btn-primary" ng-click="confirms(bookIdNew,bookNameNew,bookOriNew,bookPriceNew,bookPubNew)">提交</button>
+											</div>
+										</div>
+									</form>
+								</div>
+
+								<!-- 编辑end -->
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="tpl-alert"></div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加书籍start -->
+	<div id="add_from" style="display:none" ng-app="myBooks">
+		<div ng-controller="aBooks">
+			<form class="am-form am-form-horizontal">
+				<p>&nbsp;</p>
+				<div class="am-form-group">
+					<label class="am-u-sm-3 am-form-label">图书名称</label>
+					<div class="am-u-sm-8">
+						<input type="text" placeholder="图书名称" ng-model="bookName">
+					</div>
+					<div class="am-u-sm-1"></div>
+				</div>
+
+				<div class="am-form-group">
+					<label class="am-u-sm-3 am-form-label">原价</label>
+					<div class="am-u-sm-8">
+						<input type="text" placeholder="原价" ng-model="bookOri">
+					</div>
+					<div class="am-u-sm-1"></div>
+				</div>
+
+				<div class="am-form-group">
+					<label class="am-u-sm-3 am-form-label">现价</label>
+					<div class="am-u-sm-8">
+						<input type="text" placeholder="现价" ng-model="bookPrice">
+					</div>
+					<div class="am-u-sm-1"></div>
+				</div>
+
+				<div class="am-form-group">
+					<label class="am-u-sm-3 am-form-label">出版社</label>
+					<div class="am-u-sm-8">
+						<input type="text" placeholder="出版社" ng-model="bookPub">
+					</div>
+					<div class="am-u-sm-1"></div>
+				</div>
+
+				<div class="am-form-group">
+					<div class="am-u-sm-9 am-u-sm-push-3">
+						<button type="button" class="am-btn am-btn-primary" ng-click="addBooks()">提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/amazeui.min.js"></script>
+	<script src="assets/js/app.js"></script>
+	<script src="assets/layer/layer.js"></script>
+	<script>
+		$('#add_book').click(function() {
+        //window.open('add.html');
+        window.location='add.html';
+        return;
+        layer.open({
+        	type: 1,
+        	area: ['700px', '450px'],
+              fixed: false, //不固定
+              title:"添加图书",
+              maxmin: true,
+              content: $('#add_from')
+          });
+    });
+		angular.module("myBooks",[]).controller("aBooks",function($scope,$http){
+			$scope.addBooks=function(){
+				alert(123);
+			}
+		})
+	</script>
+</body>
+<script type="text/javascript">
+        // angular.module("myBooks",[]).controller("aBooks",function($scope,$http){
+        //         //绑定提交事件
+        //         $scope.addBooks=function(){
+        //             $http.post("./api/addbook.php",{bookName:$scope.bookName,bookOri:$scope.bookOri,bookPrice:$scope.bookPrice,bookPub:$scope.bookPub}).success(
+        //                 function(res){
+        //                     if(res.status==1){
+        //                         layer.msg("添加成功！");
+        //                     }
+        //                 })
+        //         }
+        //     })
+</script>
+</html>

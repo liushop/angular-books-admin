@@ -1,0 +1,15 @@
+{
+  "name": "angular-books-admin",
+  "version": "1.0.0",
+  "description": "这是基于angular的入门版图书管理系统",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "angular",
+    "图书管理系统"
+  ],
+  "author": "www.chao99.top",
+  "license": "ISC"
+}
